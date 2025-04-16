@@ -8,6 +8,8 @@
 #include <netdb.h>
 #include <signal.h>
 #include <windows.h>
+#include <unistd.h>
+
 #define DIE(msg) perror(msg); exit(1);
 
 
@@ -206,20 +208,24 @@ void parse_arguments(int argc, char **argv, int *server_port, char **forward_nam
 /**
  * Coordinates the effort
  */
+
+#define WAIT_FOR_CONNECTION_US     (1000000)
+
+
 int main(int argc, char **argv) {
-    int server_port, forward_port, server_socket;
+
+    int server_port;
+    int forward_port;
+    int server_socket;
+
     char *forward_name;
-
-    printf("Started");
-
-    while( 1 ){
-        //Sleep(1);
-        printf("Test .....");
-    }
-
 
     parse_arguments(argc, argv, &server_port, &forward_name, &forward_port);
     signal(SIGCHLD,  SIG_IGN);
+
+    fprintf(stdout, "Start Listening To Port : [ %d ] \n" , server_port );
+    fprintf(stdout, "Redirecting to IP : [ %s ] , Port : [ %d ] \n" , forward_name , forward_port  );
+
     server_socket = open_listening_port(server_port);
 
     while (1) {
