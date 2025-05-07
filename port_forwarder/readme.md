@@ -2,14 +2,14 @@
 # Requirement
 
     Install Packages 
-    GCC 
+    gcc 
 
 
 # Compile
 
-    Compile using Gnu Make
+    Compile using GNU Make
 
-    in Crow/Crow_pf run these commands
+    in Crow/port_forwarder run these commands
 
     make clean 
     make 
