@@ -7,8 +7,6 @@
 #include <stdlib.h>
 #include <netdb.h>
 #include <signal.h>
-#include <windows.h>
-
 #include <unistd.h>
 
 #define DIE(msg) perror(msg); exit(1);
@@ -17,7 +15,7 @@
 /**
  * Send the traffic from src socket to dst socket
  *
- * When done or on any error, this dies and will kill the forked process.
+ * When done or on any error, this DIEs and will kill the forked process.
  */
 void com(int src, int dst) {
     char buf[1024 * 4];
@@ -26,7 +24,13 @@ void com(int src, int dst) {
     r = read(src, buf, 1024 * 4);
 
     while (r > 0) {
+
         i = 0;
+
+        if(r > 0 ){
+            fprintf(stdout, "payload Size : %d\n" , r);
+            fflush(stdout);
+        }
 
         while (i < r) {
             j = write(dst, buf + i, r - i);
@@ -34,6 +38,7 @@ void com(int src, int dst) {
             if (j == -1) {
                 DIE("write"); // TODO is errno EPIPE
             }
+            
 
             i += j;
         }
@@ -56,7 +61,7 @@ void com(int src, int dst) {
 /**
  * Opens a connection to the destination.
  *
- * On any error, this dies and will kill the forked process.
+ * On any error, this DIEs and will kill the forked process.
  */
 int open_forwarding_socket(char *forward_name, int forward_port) {
     int forward_socket;
@@ -115,7 +120,7 @@ void forward_traffic(int client_socket, char *forward_name, int forward_port) {
 
 
 /**
- * Opens the listening port or dies trying.
+ * Opens the listening port or DIEs trying.
  */
 int open_listening_port(int server_port) {
     struct sockaddr_in server_address;
@@ -177,33 +182,31 @@ void accept_connection(int server_socket, char *forward_name, int forward_port) 
 /**
  * Argument parsing and validation
  */
-void parse_arguments(int argc, char **argv, int *server_port, char **forward_name, int *forward_port) {
+void parse_arguments(int argc, char **argv, int *server_port, int *forward_port) {
+
+
     if (argc < 3) {
         fprintf(stderr, "Not enough arguments\n");
-        fprintf(stderr, "Syntax:  %s listen_port forward_host [forward_port]\n", argv[0]);
         exit(1);
     }
+
 
     *server_port = atoi(argv[1]);
 
-    if (*server_port < 1) {
+    if ((*server_port < 1 ) || (*server_port >= 65535)) {
         fprintf(stderr, "Listen port is invalid\n");
         exit(1);
     }
-
-    *forward_name = argv[2];
     
-    if (argc == 3) {
-        *forward_port = *server_port;
-    } else {
-        *forward_port = atoi(argv[3]);
+    *forward_port = atoi(argv[2]);
 
-        if (*forward_port < 1) {
-            fprintf(stderr, "Forwarding port is invalid\n");
-            exit(1);
-        }
+    if ((*forward_port < 1) || (*forward_port >= 65535)) {
+        fprintf(stderr, "Forwarding port is invalid\n");
+        exit(1);
     }
+
 }
+
 
 
 /**
@@ -219,13 +222,13 @@ int main(int argc, char **argv) {
     int forward_port;
     int server_socket;
 
-    char *forward_name;
+    char *forward_name = "127.0.0.1";
 
-    parse_arguments(argc, argv, &server_port, &forward_name, &forward_port);
+    parse_arguments(argc, argv, &server_port, &forward_port);
     signal(SIGCHLD,  SIG_IGN);
 
-    fprintf(stdout, "Start Listening To Port : [ %d ] \n" , server_port );
-    fprintf(stdout, "Redirecting to IP : [ %s ] , Port : [ %d ] \n" , forward_name , forward_port  );
+    fprintf(stdout, "Start          Port : [ %d ] \n" , server_port );
+    fprintf(stdout, "Redirecting    Port : [ %d ] \n" , forward_port );
 
     server_socket = open_listening_port(server_port);
 
