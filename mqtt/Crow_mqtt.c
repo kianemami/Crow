@@ -127,26 +127,20 @@ int main(int argc, char **argv) {
 	int rc = 0 ;
 	int id=12;
     int server_port;
-    char *server_name = "127.0.0.1";
+	char *server_name = "127.0.0.1";
 	char current_time_date[128] ;
 
 	signal(SIGCHLD, SIG_IGN);
 
-
-	//int GF_forward_socket = 0 ;
-	//char G_MQTT_topic_name[64] = {0} ;
 	
 	/* Argument Parsing */
 	parse_arguments(argc, argv, G_MQTT_topic_name , sizeof (G_MQTT_topic_name) , &server_port);
 
 
-
 	/* TCP Server */
     fprintf(stdout, "Redirecting  MQTT Messages To %s:%d \n" , server_name , server_port );
-
 	GF_forward_socket = open_listening_port(server_port);
 	
-
 
 	/* MQTT Server */
 	mosquitto_lib_init();

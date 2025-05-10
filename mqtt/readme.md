@@ -18,6 +18,10 @@
 
 # Run
 
-    ./Crow_mqtt 
+    ./Crow_mqtt Topic_name Forwarding_Port
+
+## Example 
+
+    Crow_pf Crow 5000
 
 

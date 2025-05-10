@@ -22,6 +22,6 @@
 
 ## Example
 
-    ./Crow_pf 5000 5001 
+    Crow_pf 5000 5001 
 
 
