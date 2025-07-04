@@ -40,7 +40,6 @@ $(BUILD_DIR)/%.o: $(SRC_DIR)/%.c | $(BUILD_DIR)
 	$(CC) $(CFLAGS) -c $< -o $@
 
 
-
 # Install the program system-wide
 install: $(TARGET_APP)
 	install -m 755 $(TARGET_APP) $(INSTALL_DIR)
